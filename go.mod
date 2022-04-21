@@ -2,7 +2,10 @@ module github.com/abdfnx/gomo
 
 go 1.18
 
-require github.com/spf13/viper v1.11.0
+require (
+	github.com/spf13/viper v1.11.0
+	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
