@@ -1,4 +1,4 @@
-package secman
+package gomo
 
 import (
 	"fmt"
@@ -142,7 +142,7 @@ func rootHelpFunc(cs *ios.ColorScheme, command *cobra.Command, args []string) {
 	}
 
 	helpEntries = append(helpEntries, helpEntry{"LEARN MORE", `
-Use 'secman <command> <subcommand> --help' for more information about a command.`})
+Use 'gomo <command> <subcommand> --help' for more information about a command.`})
 	if _, ok := command.Annotations["help:tellus"]; ok {
 		helpEntries = append(helpEntries, helpEntry{"TELL US", command.Annotations["help:tellus"]})
 	}
