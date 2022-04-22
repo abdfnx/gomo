@@ -13,7 +13,6 @@ func DownloadCMD() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "download",
 		Short: "Download go packages through all your modules.",
-		Aliases: []string{"load"},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := tea.NewProgram(download.Download(false)).Start(); err != nil {
 				fmt.Printf("could not start program: %s\n", err)

@@ -2,11 +2,14 @@ package gomo
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/MakeNowJust/heredoc"
 	"github.com/abdfnx/gomo/cmd"
 	"github.com/abdfnx/gomo/cmd/factory"
 	"github.com/abdfnx/gomo/core/options"
+	"github.com/abdfnx/gomo/core/pipe/download"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +30,7 @@ func Execute(f *factory.Factory, version string, buildDate string) *cobra.Comman
 			gomo init
 
 			# Download go packages through all your modules.
-			gomo download
+			gomo
 
 			# Update all packages.
 			gomo update
@@ -41,7 +44,10 @@ func Execute(f *factory.Factory, version string, buildDate string) *cobra.Comman
 			if opts.Version {
 				fmt.Println("gomo version " + version + " " + buildDate)
 			} else {
-				cmd.Help()
+				if err := tea.NewProgram(download.Download(false)).Start(); err != nil {
+					fmt.Printf("could not start program: %s\n", err)
+					os.Exit(3)
+				}
 			}
 		},
 	}
