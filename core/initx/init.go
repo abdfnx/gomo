@@ -18,6 +18,7 @@ func Init() {
 
 	viper.SetDefault("modules", []string{})
 	viper.SetDefault("cmds.download", "go mod download")
+	viper.SetDefault("cmds.update", "go get -u")
 
 	if err := viper.SafeWriteConfig(); err != nil {
 		if os.IsNotExist(err) {
