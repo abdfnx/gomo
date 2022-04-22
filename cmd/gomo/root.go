@@ -77,6 +77,8 @@ func Execute(f *factory.Factory, version string, buildDate string) *cobra.Comman
 	rootCmd.AddCommand(
 		cmd.AddCMD(),
 		cmd.DownloadCMD(),
+		cmd.DeleteCMD(),
+		cmd.GetCMD(),
 		cmd.InitCMD(),
 		cmd.TidyCMD(),
 		cmd.UpdateCMD(),
