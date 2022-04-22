@@ -11,13 +11,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-func InitX() {
+func Init() {
 	viper.AddConfigPath(".")
 	viper.SetConfigName("gomo")
 	viper.SetConfigType("json")
 
 	viper.SetDefault("modules", []string{})
-	viper.SetDefault("cmds.install", "go mod download")
+	viper.SetDefault("cmds.download", "go mod download")
 
 	if err := viper.SafeWriteConfig(); err != nil {
 		if os.IsNotExist(err) {

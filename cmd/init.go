@@ -7,12 +7,11 @@ import (
 
 func InitCMD() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "doctor",
-		Short: "Creates a new gomo.json file in the current folder",
-		Long: "Creates a new gomo.json file in the current folder",
+		Use:   "init",
+		Short: "Creates a new gomo.json file in the current folder.",
 		Aliases: []string{"."},
 		Run: func(cmd *cobra.Command, args []string) {
-			initx.InitX()
+			initx.Init()
 		},
 	}
 
