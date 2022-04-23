@@ -32,6 +32,12 @@ func Execute(f *factory.Factory, version string, buildDate string) *cobra.Comman
 			# Download go packages through all your modules.
 			gomo
 
+			# Get a go package and add it through all modules.
+			gomo get github.com/gorilla/mux
+
+			# Delete a go package through all modules.
+			gomo delete github.com/example/example1
+
 			# Update all packages.
 			gomo update
 		`,

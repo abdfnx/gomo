@@ -19,7 +19,7 @@ type Styles struct {
 func DefaultStyles() Styles {
 	s := Styles{}
 
-	s.Wrap = lipgloss.NewStyle().Width(58)
+	s.Wrap = lipgloss.NewStyle().Width(75)
 	s.Subtle = lipgloss.NewStyle().
 		Foreground(constants.SUBTITLE_COLOR)
 	s.Success = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FFF")).Background(lipgloss.Color(constants.GREEN_COLOR)).PaddingLeft(1).PaddingRight(1)

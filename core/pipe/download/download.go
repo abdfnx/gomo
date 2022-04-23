@@ -21,60 +21,18 @@ type model struct {
 	spinner  spinner.Model
 	message  string
 	errOut   string
-	err   	 error
+	isTidy   bool
 }
 
 func Download(isTidy bool) model {
 	st := shared.DefaultStyles()
-	errOut := ""
-
-	gomoFile, err := os.ReadFile("gomo.json")
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-    modules := gjson.Get(string(gomoFile), "modules.#")
-
-	for i := 0; i < int(modules.Int()); i++ {
-		mod := gjson.Get(string(gomoFile), "modules." + fmt.Sprint(i)).String()
-
-		var stdout bytes.Buffer
-		var stderr bytes.Buffer
-
-		cmd := exec.Command("")
-		downloadCmd := gjson.Get(string(gomoFile), "cmds.download").String()
-
-		if isTidy {
-			downloadCmd = "go mod tidy"
-		}
-
-		if runtime.GOOS == "windows" {
-			cmd = exec.Command("powershell.exe", downloadCmd)
-		} else {
-			cmd = exec.Command("bash", "-c", downloadCmd)
-		}
-
-		cmd.Dir = mod
-		cmd.Stdout = &stdout
-		cmd.Stderr = &stderr
-
-		err := cmd.Run()
-
-		if err != nil {
-			errOut = stderr.String()
-		}
-
-		fmt.Print(stdout.String())
-	}
 
 	return model{
 		styles:   st,
 		state:    shared.Ready,
 		message:  "",
-		errOut:   errOut,
 		spinner:  shared.NewSpinner(),
-		err:      err,
+		isTidy:   isTidy,
 	}
 }
 
@@ -85,20 +43,26 @@ func (m model) Init() tea.Cmd {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 		case shared.SuccessMsg:
+			_msg := " Packages downloaded successfully"
+
+			if m.isTidy {
+				_msg = " Packages tidied successfully"
+			}
+			
 			m.state = shared.Ready
 			head := m.styles.Success.Render("SUCCESS")
-			body := m.styles.Subtle.Render(" Packages downloaded successfully")
+			body := m.styles.Bold.Render(_msg)
 			m.message = m.styles.Wrap.Render(head + body)
 
-			return m, nil
+			return m, tea.Quit
 
 		case shared.ErrorMsg:
 			m.state = shared.Ready
 			head := m.styles.Error.Render("ERROR")
-			body := m.styles.Subtle.Render(" " + m.errOut)
+			body := " " + m.errOut
 			m.message = m.styles.Wrap.Render(head + body)
 
-			return m, nil
+			return m, tea.Quit
 
 		case spinner.TickMsg:
 			var cmd tea.Cmd
@@ -124,12 +88,11 @@ func (m model) View() string {
 		s += spinnerView(m)
 	} else {
 		if m.message != "" {
-			fmt.Println(lipgloss.NewStyle().Padding(0, 2).SetString(m.message).String())
-			os.Exit(3)
+			fmt.Println(m.message)	
 		}
 	}
 
-	return lipgloss.NewStyle().Padding(0, 2).SetString(s).String()
+	return lipgloss.NewStyle().SetString(s).String()
 }
 
 func spinnerView(m model) string {
@@ -139,11 +102,53 @@ func spinnerView(m model) string {
 func run(m model) tea.Cmd {
 	return func() tea.Msg {
 		cmdOut := ""
+		errOut := ""
 
-		if m.errOut != "" {
-			cmdOut = strings.TrimSuffix(m.errOut, "\n")
+		gomoFile, err := os.ReadFile("gomo.json")
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		modules := gjson.Get(string(gomoFile), "modules.#")
+
+		for i := 0; i < int(modules.Int()); i++ {
+			mod := gjson.Get(string(gomoFile), "modules." + fmt.Sprint(i)).String()
+
+			var stdout bytes.Buffer
+			var stderr bytes.Buffer
+
+			cmd := exec.Command("")
+			downloadCmd := gjson.Get(string(gomoFile), "cmds.download").String()
+
+			if m.isTidy {
+				downloadCmd = "go mod tidy"
+			}
+
+			if runtime.GOOS == "windows" {
+				cmd = exec.Command("powershell.exe", downloadCmd)
+			} else {
+				cmd = exec.Command("bash", "-c", downloadCmd)
+			}
+
+			cmd.Dir = mod
+			cmd.Stdout = &stdout
+			cmd.Stderr = &stderr
+
+			err := cmd.Run()
+
+			if err != nil {
+				errOut = stderr.String()
+				m.errOut = errOut
+			}
+
+			fmt.Print(stdout.String())
+		}
+
+		if errOut != "" {
+			cmdOut = strings.TrimSuffix(errOut, "\n")
 			return shared.ErrorMsg{}
-		} else if m.errOut == "" {
+		} else if errOut == "" {
 			return shared.SuccessMsg{}
 		}
 

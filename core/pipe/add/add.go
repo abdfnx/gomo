@@ -41,6 +41,10 @@ func Add(mod string) {
 		PaddingLeft(1).
 		PaddingRight(1)
 
+	if mod == "." {
+		mod = "root directory"
+	}
+
 	fmt.Print(style.Render("SUCCESS"))
 	fmt.Println(lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color(constants.GREEN_COLOR)).SetString(" " + mod +" Added Successfully").String())
 }

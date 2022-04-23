@@ -133,12 +133,12 @@ func (m model) View() string {
 		s += spinnerView(m)
 	} else {
 		if m.message != "" {
-			fmt.Println(lipgloss.NewStyle().Padding(0, 2).SetString(m.message).String())
-			os.Exit(3)
+			fmt.Println(m.message)
+			os.Exit(0)
 		}
 	}
 
-	return lipgloss.NewStyle().Padding(0, 2).SetString(s).String()
+	return lipgloss.NewStyle().SetString(s).String()
 }
 
 func spinnerView(m model) string {
