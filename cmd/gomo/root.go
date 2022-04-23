@@ -26,20 +26,20 @@ func Execute(f *factory.Factory, version string, buildDate string) *cobra.Comman
 		Long: desc,
 		SilenceErrors: true,
 		Example: `
-			# Creates a new gomo.json file in the current folder.
-			gomo init
+# Creates a new gomo.json file in the current folder.
+gomo init
 
-			# Download go packages through all your modules.
-			gomo
+# Download go packages through all your modules.
+gomo
 
-			# Get a go package and add it through all modules.
-			gomo get github.com/gorilla/mux
+# Get a go package and add it through all modules.
+gomo get github.com/gorilla/mux
 
-			# Delete a go package through all modules.
-			gomo delete github.com/example/example1
+# Delete a go package through all modules.
+gomo delete github.com/example/example1
 
-			# Update all packages.
-			gomo update
+# Update all packages.
+gomo update
 		`,
 		Annotations: map[string]string{
 			"help:tellus": heredoc.Doc(`
