@@ -26,51 +26,12 @@ type model struct {
 
 func Update() model {
 	st := shared.DefaultStyles()
-	errOut := ""
-
-	gomoFile, err := os.ReadFile("gomo.json")
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-    modules := gjson.Get(string(gomoFile), "modules.#")
-
-	for i := 0; i < int(modules.Int()); i++ {
-		mod := gjson.Get(string(gomoFile), "modules." + fmt.Sprint(i)).String()
-
-		var stdout bytes.Buffer
-		var stderr bytes.Buffer
-
-		cmd := exec.Command("")
-		updateCmd := gjson.Get(string(gomoFile), "cmds.update").String()
-
-		if runtime.GOOS == "windows" {
-			cmd = exec.Command("powershell.exe", updateCmd)
-		} else {
-			cmd = exec.Command("bash", "-c", updateCmd)
-		}
-
-		cmd.Dir = mod
-		cmd.Stdout = &stdout
-		cmd.Stderr = &stderr
-
-		err := cmd.Run()
-
-		if err != nil {
-			errOut = stderr.String()
-		}
-
-		fmt.Print(stdout.String())
-	}
 
 	return model{
 		styles:   st,
 		state:    shared.Ready,
 		message:  "",
-		errOut:   errOut,
 		spinner:  shared.NewSpinner(),
-		err:      err,
 	}
 }
 
@@ -83,10 +44,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case shared.SuccessMsg:
 			m.state = shared.Ready
 			head := m.styles.Success.Render("SUCCESS")
-			body := m.styles.Subtle.Render(" Packages updated successfully")
+			body := m.styles.Bold.Render(" Packages updated successfully")
 			m.message = m.styles.Wrap.Render(head + body)
 
-			return m, nil
+			return m, tea.Quit
 
 		case shared.ErrorMsg:
 			m.state = shared.Ready
@@ -94,7 +55,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			body := m.styles.Subtle.Render(" " + m.errOut)
 			m.message = m.styles.Wrap.Render(head + body)
 
-			return m, nil
+			return m, tea.Quit
 
 		case spinner.TickMsg:
 			var cmd tea.Cmd
@@ -135,6 +96,44 @@ func spinnerView(m model) string {
 func run(m model) tea.Cmd {
 	return func() tea.Msg {
 		cmdOut := ""
+		errOut := ""
+
+		gomoFile, err := os.ReadFile("gomo.json")
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		modules := gjson.Get(string(gomoFile), "modules.#")
+
+		for i := 0; i < int(modules.Int()); i++ {
+			mod := gjson.Get(string(gomoFile), "modules." + fmt.Sprint(i)).String()
+
+			var stdout bytes.Buffer
+			var stderr bytes.Buffer
+
+			cmd := exec.Command("")
+			updateCmd := gjson.Get(string(gomoFile), "cmds.update").String()
+
+			if runtime.GOOS == "windows" {
+				cmd = exec.Command("powershell.exe", updateCmd)
+			} else {
+				cmd = exec.Command("bash", "-c", updateCmd)
+			}
+
+			cmd.Dir = mod
+			cmd.Stdout = &stdout
+			cmd.Stderr = &stderr
+
+			err := cmd.Run()
+
+			if err != nil {
+				errOut = stderr.String()
+				m.errOut = errOut
+			}
+
+			fmt.Print(stdout.String())
+		}
 
 		if m.errOut != "" {
 			cmdOut = strings.TrimSuffix(m.errOut, "\n")
