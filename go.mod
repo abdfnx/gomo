@@ -22,6 +22,7 @@ require (
 	github.com/spf13/viper v1.11.0
 	github.com/tidwall/gjson v1.14.1
 	github.com/tidwall/sjson v1.2.4
+	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
 )
 
@@ -45,7 +46,6 @@ require (
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
-	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
