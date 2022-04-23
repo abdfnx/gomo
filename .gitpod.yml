@@ -1,3 +1,2 @@
-tasks:
-  - init: brew install go-task/tap/go-task abdfnx/tap/gomo
-    command: gomo
+image:
+  file: .gitpod/Dockerfile
