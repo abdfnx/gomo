@@ -1,0 +1,9 @@
+# build dirs
+dist
+
+# tran files
+*.exe
+*.exe~
+
+# dependency directories
+vendor

@@ -7,6 +7,34 @@ tasks:
     cmds:
       - task: build
 
+  set-tag-and-date:
+    cmds:
+      - if [ -f "date.txt" ]; then rm date.txt; fi
+      - if [ -f "tag.txt" ]; then rm tag.txt; fi
+      - go run ./scripts/date.go >> date.txt
+      - git describe --abbrev=0 --tags >> tag.txt
+
   build:
     cmds:
-      - go build .
+      - task: set-tag-and-date
+      - go mod tidy -compat=1.18
+      - go build -ldflags "-X main.version=$(cat tag.txt) -X main.buildDate=$(cat date.txt)" -o gomo
+
+  install:
+    deps: [ build ]
+    cmds:
+      - sudo mv gomo /usr/local/bin
+
+  remove:
+    cmds:
+      - sudo rm -rf /usr/local/bin/gomo
+
+  just-build-gomo-container:
+    deps: [ build ]
+    cmds:
+      - docker build -t gomocli/gomo .
+
+  build-gomo-container:
+    deps: [ just-build-gomo-container ]
+    cmds:
+      - docker push gomocli/gomo
