@@ -41,6 +41,12 @@ brew install abdfnx/tap/gomo
 gomo init
 ```
 
+- Initialize a new module
+
+```bash
+gomo init --mod github.com/x/x2 --path dir
+```
+
 - Download go packages through all your modules
 
 ```bash
